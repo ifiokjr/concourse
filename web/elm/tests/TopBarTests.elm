@@ -1366,7 +1366,7 @@ all =
                 toggleMsg =
                     ApplicationMsgs.Update <|
                         Msgs.Click <|
-                            Msgs.PipelineButton Msgs.AllPipelinesSection
+                            Msgs.TopBarPauseToggle
                                 pipelineIdentifier
             in
             [ defineHoverBehaviour
@@ -1402,7 +1402,7 @@ all =
                                 }
                     }
                 , hoverable =
-                    Msgs.PipelineButton Msgs.AllPipelinesSection pipelineIdentifier
+                    Msgs.TopBarPauseToggle pipelineIdentifier
                 }
             , defineHoverBehaviour
                 { name = "play pipeline icon when unauthenticated"
@@ -1437,7 +1437,7 @@ all =
                                 }
                     }
                 , hoverable =
-                    Msgs.PipelineButton Msgs.AllPipelinesSection pipelineIdentifier
+                    Msgs.TopBarPauseToggle pipelineIdentifier
                 }
             , defineHoverBehaviour
                 { name = "play pipeline icon when unauthorized"
@@ -1480,7 +1480,7 @@ all =
                         ]
                     }
                 , hoverable =
-                    Msgs.PipelineButton Msgs.AllPipelinesSection pipelineIdentifier
+                    Msgs.TopBarPauseToggle pipelineIdentifier
                 }
             , test "clicking play button sends TogglePipelinePaused msg" <|
                 \_ ->
