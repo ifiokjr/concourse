@@ -1593,7 +1593,8 @@ all =
 
                         visibilityToggle =
                             Common.queryView
-                                >> Query.find [ class "card-footer" ]
+                                >> Query.findAll [ class "card-footer" ]
+                                >> Query.first
                                 >> Query.children []
                                 >> Query.index -1
                                 >> Query.children []
@@ -1670,6 +1671,35 @@ all =
                                                 Msgs.Hide
                                                 pipelineId
                                             ]
+                            , defineHoverBehaviour
+                                { name = "open eye toggle in favorites section"
+                                , setup =
+                                    whenOnDashboard { highDensity = False }
+                                        |> Application.handleDelivery
+                                            (Message.Subscription.FavoritedPipelinesReceived <| Ok <| Set.singleton 0)
+                                        |> Tuple.first
+                                        |> setup
+                                        |> Tuple.first
+                                , query = visibilityToggle
+                                , unhoveredSelector =
+                                    { description = "faded 20px square"
+                                    , selector =
+                                        openEye
+                                            ++ [ style "opacity" "0.5"
+                                               , style "cursor" "pointer"
+                                               ]
+                                    }
+                                , hoverable =
+                                    Msgs.VisibilityButton FavoritesSection pipelineId
+                                , hoveredSelector =
+                                    { description = "bright 20px square"
+                                    , selector =
+                                        openEye
+                                            ++ [ style "opacity" "1"
+                                               , style "cursor" "pointer"
+                                               ]
+                                    }
+                                }
                             , defineHoverBehaviour
                                 { name = "visibility spinner"
                                 , setup =
@@ -2218,6 +2248,59 @@ all =
                                        ]
                             }
                         , hoverable = Msgs.PipelineButton AllPipelinesSection Data.pipelineId
+                        , hoveredSelector =
+                            { description = "a bright 20px square pause button with pointer cursor"
+                            , selector =
+                                iconSelector
+                                    { size = "20px"
+                                    , image = Assets.PauseIcon
+                                    }
+                                    ++ [ style "cursor" "pointer"
+                                       , style "opacity" "1"
+                                       ]
+                            }
+                        }
+                    , defineHoverBehaviour
+                        { name = "pause button in favorites section"
+                        , setup =
+                            whenOnDashboard { highDensity = False }
+                                |> givenDataAndUser
+                                    (apiData [ ( "team", [] ) ])
+                                    (userWithRoles [ ( "team", [ "owner" ] ) ])
+                                |> Tuple.first
+                                |> Application.handleCallback
+                                    (Callback.AllPipelinesFetched <|
+                                        Ok
+                                            [ Data.pipeline "team" 0 |> Data.withName "pipeline" ]
+                                    )
+                                |> Tuple.first
+                                |> Application.handleDelivery
+                                    (Message.Subscription.FavoritedPipelinesReceived <| Ok <| Set.singleton 0)
+                                |> Tuple.first
+                        , query =
+                            Common.queryView
+                                >> Query.findAll [ class "card-footer" ]
+                                >> Query.first
+                                >> Query.children []
+                                >> Query.index -1
+                                >> Query.children []
+                                >> Query.index 0
+                        , unhoveredSelector =
+                            { description = "a faded 20px square pause button with pointer cursor"
+                            , selector =
+                                iconSelector
+                                    { size = "20px"
+                                    , image = Assets.PauseIcon
+                                    }
+                                    ++ [ style "cursor" "pointer"
+                                       , style "opacity" "0.5"
+                                       ]
+                            }
+                        , hoverable =
+                            Msgs.PipelineButton FavoritesSection
+                                { pipelineName = "pipeline"
+                                , teamName = "team"
+                                }
                         , hoveredSelector =
                             { description = "a bright 20px square pause button with pointer cursor"
                             , selector =
